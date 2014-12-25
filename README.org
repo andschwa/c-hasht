@@ -1,5 +1,7 @@
 #+title: Dynamically Expanding Hash Table in C
 
+[[https://travis-ci.org/andschwa/c-hasht][https://travis-ci.org/andschwa/c-hasht.svg?branch=master]]
+
 This is a generic (=hasht_node= key and value are void pointers)
 dynamically expanding (by default, at 50 percent utilization, table
 doubles in size), hash table library implemented in C. It uses open
