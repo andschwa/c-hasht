@@ -12,7 +12,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-bool HASHT_DEBUG;
+#ifndef HASHT_DEBUG
+#define HASHT_DEBUG 0
+#endif
 
 struct hasht_node {
 	void *key;
