@@ -6,12 +6,10 @@
  * This file released under the AGPLv3 license.
  */
 
-#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
-#include <assert.h>
 
-#include "test.h"
-#include "list.h"
+#include "test/test.h"
 #include "hasht.h"
 
 struct hasht *test_hasht_new(size_t size);
@@ -59,32 +57,37 @@ int main()
 
 struct hasht *test_hasht_new(size_t size) {
 	struct hasht *t = hasht_new(size, true, NULL, NULL, NULL);
-	assert(hasht_size(t) == size);
+	if (hasht_size(t) != size)
+		failure("size should have been %zu", size);
 	return t;
 }
 
 void test_hasht_insert(struct hasht *t, char *k, char *v)
 {
 	struct hasht_node *slot = hasht_insert(t, k, v);
-	assert(slot->value == v);
+	if (slot->value != v)
+		failure("insert value mismatched");
 }
 
 void test_hasht_search(struct hasht *t, char *k, char *v)
 {
 	void *test_v = hasht_search(t, k);
-	assert(test_v == v);
+	if (test_v != v)
+		failure("search value mismatched");
 }
 
 void test_hasht_insert_duplicate(struct hasht *t, char *k, char *v)
 {
 	hasht_insert(t, k, v);
 	void *test_v = hasht_insert(t, k, v);
-	assert(test_v == NULL);
+	if (test_v != NULL)
+		failure("should not have allowed duplicate insertion");
 }
 
 void test_hasht_used(struct hasht *t, size_t s)
 {
-	assert(hasht_used(t) == s);
+	if (hasht_used(t) != s)
+		failure("used should have been %zu", s);
 }
 
 void test_hasht_resize(struct hasht *t, size_t size)
@@ -92,13 +95,15 @@ void test_hasht_resize(struct hasht *t, size_t size)
 	hasht_insert(t, strdup("one"), strdup("1"));
 	hasht_insert(t, strdup("two"), strdup("2"));
 	/* table should have doubled in size once */
-	assert(hasht_size(t) == size * 2);
+	if (hasht_size(t) != size * 2)
+		failure("should have doubled in size");
 	test_hasht_used(t, 4);
 }
 
 void test_hasht_delete(struct hasht *t, char *k, char *v)
 {
 	char *test_v = hasht_delete(t, k);
-	assert(v == test_v);
+	if (v != test_v)
+		failure("delete value mismatched");
 	free(v);
 }
