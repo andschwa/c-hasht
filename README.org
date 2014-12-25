@@ -1,0 +1,65 @@
+#+title: Dynamically Expanding Hash Table in C
+
+This is a generic (=hasht_node= key and value are void pointers)
+dynamically expanding (by default, at 50 percent utilization, table
+doubles in size), hash table library implemented in C. It uses open
+addressing for collision resolution (to eliminate a dependency on
+another data structure), with a double hashing probe sequence.
+
+The table is dynamically allocated and can be resized at will;
+although resizing is a O(n) operation since each entry must be added
+to the new table.
+
+The default hash is =hashlittle2()= from Bob Jenkins' public domain
+=lookup3.c= [[http://burtleburtle.net/bob/c/lookup3.c][hash
+library]]. This was chosen because it is highly performant, and gives
+two hashes for the price of one; which is incredibly useful when using
+a double hashing probe sequence. This does require that the hash table
+size be a power of two.
+
+This library was originally created for use in my
+[[https://github.com/andschwa/uidaho-cs445][120++ Compiler]].
+
+* Usage
+#+begin_src C
+  void simple_delete(struct hasht_node *n)
+  {
+          /* default delete frees key and value, which we do not want in
+             this contrived example */
+          free(n);
+  }
+
+  /* 2^5 = 32 start size, with default hash, compare, and delete functions */
+  struct hasht *table = hasht_new(32, true, NULL, NULL &simple_delete);
+
+  hasht_insert(table, "Alpha", 1);
+  hasht_insert(table, "Beta", 2);
+  hasht_insert(table, "Gamma", 3);
+
+  /* duplicate key would return NULL and print debug message */
+  hasht_insert(table, "Gamma", 6);
+
+  /* NULL is returned if the key is not found */
+  if (hasht_search(table, "Beta"))
+          printf("Beta was in the set!");
+
+  hasht_delete(table, "Alpha");
+
+  hasht_free(table);
+#+end_src
+
+* Unit Tests
+This library is unit tested (and all functions have comment
+headers). It utilizes my
+[[https://github.com/andschwa/c-unit-test][Simple C Unit Test
+Framework]], and runs on TravisCI. See =test_hasht.c= for example
+usage.
+
+
+* Building
+Being a library, compiling an object file is simple.
+#+begin_src sh
+gcc -std=gnu99 -c hasht.c lookup3.c
+#+end_src
+
+See =.travis.yml= for an example where it is linked to the unit tests.
