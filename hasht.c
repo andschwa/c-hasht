@@ -53,7 +53,7 @@ struct hasht *hasht_new(size_t size,
 		return NULL;
 	}
 
-	t->size = size == 0
+	t->size = (size == 0)
 		? 256
 		: size;
 
@@ -62,7 +62,7 @@ struct hasht *hasht_new(size_t size,
 	t->grow = grow;
 
 	t->hash = (hash == NULL)
-		? (size_t (*)(void *, int perm))&hasht_default_hash
+		? (size_t (*)(void *, int))&hasht_default_hash
 		: hash;
 
 	t->compare = (compare == NULL)
